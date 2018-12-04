@@ -2,12 +2,21 @@
 
 include ('common.php');
 
-if (isset($_POST['index_button'])) {
-    header("Location: cart.php");
+if(!isset($_SESSION['id'])) {
+    $_SESSION['id']= [];
 }
-print_r($_REQUEST["name"]);
-$stmt = $conn->query('SELECT * FROM `products`');
 
+if (isset($_GET['id'])) {
+    if(!in_array($_GET['id'], $_SESSION['id'])) {
+        array_push($_SESSION['id'], $_GET['id']);
+    }
+}
+
+$arr = $_SESSION['id'] ?: [0];
+$in = str_repeat('?,', count($arr) - 1) . '?';
+$sql = "SELECT * FROM `products` WHERE `id` NOT IN ($in)";
+$stmt = $conn->prepare($sql);
+$stmt->execute($arr);
 
 ?>
 
@@ -17,7 +26,9 @@ $stmt = $conn->query('SELECT * FROM `products`');
         <th>Add to cart</th>
     </tr>
 
-    <?php while ($row = $stmt->fetch()) : ?>
+    <?php while ($row = $stmt->fetch()) :
+        $id = $row['id'];
+    ?>
         <tr>
             <td>
                 <?= $row['title'] ?><br />
@@ -25,9 +36,10 @@ $stmt = $conn->query('SELECT * FROM `products`');
                 <?= $row['price'] ?>
             </td>
             <td align="center">
-                <a href = "">Add</a>
+                <a href="index.php?id=<?= $id ?>">Add</a>
             </td>
         </tr>
     <?php endwhile ?>
 
 </table>
+<a href="cart.php">Go to cart</a>
