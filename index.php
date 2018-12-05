@@ -10,6 +10,7 @@ if (isset($_GET['id'])) {
     if(!in_array($_GET['id'], $_SESSION['id'])) {
         array_push($_SESSION['id'], $_GET['id']);
     }
+    header("Location: index.php");
 }
 
 $arr = $_SESSION['id'] ?: [0];
