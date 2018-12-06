@@ -91,9 +91,9 @@ if (isset($_POST['submit']))  {
     ?>
         <tr>
             <td>
-                <?= $row['title'] ?><br />
-                <?= $row['description'] ?><br />
-                <?= $row['price'] ?>
+                <b>Title: </b><?= $row['title'] ?><br />
+                <b>Description: </b><?= $row['description'] ?><br />
+                <b>Price: </b><?= $row['price'] ?>
             </td>
             <td align="center">
                 <a href="cart.php?id=<?= $id ?>">Remove</a>
@@ -105,17 +105,33 @@ if (isset($_POST['submit']))  {
 <br />
 
 <form action="" method="post">
-    <?php if(isset($_SESSION['msg'])) :
-        ?>
+    <?php if(isset($_SESSION['msg'])) : ?>
         <div class="alert alert-danger">
             <?= $_SESSION['msg'] ?>
             <?php unset($_SESSION['msg']); ?>
         </div>
     <?php endif ?>
-    <input type="text" name="name" placeholder="Name" value=""><br />
-    <input type="text" name="details" placeholder="E-mail" value=""><br />
-    <textarea name="message" rows="5" cols="22" placeholder="Comments"></textarea><br />
-    <a href="index.php">Go to index</a>
-    <input type='submit' name='submit' value='Checkout'/>
-</form>
 
+    <table>
+        <tr>
+            <td>Name:</td>
+            <td><input type="text" name="name" placeholder="Name" value=""></td>
+        </tr>
+
+        <tr>
+            <td>Email:</td>
+            <td><input type="text" name="details" placeholder="E-mail" value=""></td>
+        </tr>
+
+        <tr>
+            <td>Comments:</td>
+            <td><textarea name="message" rows="5" cols="22" placeholder="Comments"></textarea></td>
+        </tr>
+
+        <tr>
+            <td><a href="index.php">Go to index</a></td>
+            <td><input type='submit' name='submit' value='Checkout'/></td>
+        </tr>
+    </table>
+
+</form>

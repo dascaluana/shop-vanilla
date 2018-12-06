@@ -7,6 +7,7 @@ if(!isset($_SESSION['id'])) {
 }
 
 if (isset($_GET['id'])) {
+
     if(!in_array($_GET['id'], $_SESSION['id'])) {
         array_push($_SESSION['id'], $_GET['id']);
     }
@@ -28,13 +29,12 @@ $stmt->execute($arr);
     </tr>
 
     <?php while ($row = $stmt->fetch()) :
-        $id = $row['id'];
-    ?>
+        $id = $row['id']; ?>
         <tr>
             <td>
-                <?= $row['title'] ?><br />
-                <?= $row['description'] ?><br />
-                <?= $row['price'] ?>
+                <b>Title: </b><?= $row['title'] ?><br />
+                <b>Description: </b><?= $row['description'] ?><br />
+                <b>Price: </b><?= $row['price'] ?>
             </td>
             <td align="center">
                 <a href="index.php?id=<?= $id ?>">Add</a>

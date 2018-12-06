@@ -32,9 +32,9 @@ $stmt->execute();
     ?>
         <tr>
             <td>
-                <?= $row['title'] ?><br />
-                <?= $row['description'] ?><br />
-                <?= $row['price'] ?>
+                <b>Title: </b><?= $row['title'] ?><br />
+                <b>Description: </b><?= $row['description'] ?><br />
+                <b>Price: </b><?= $row['price'] ?>
             </td>
             <td align="center">
                 <a href="product.php?id=<?= $id ?>">Edit</a>
@@ -47,3 +47,10 @@ $stmt->execute();
 
 <a href="product.php">Add</a>
 <a href="logout.php">Logout</a>
+
+<?php if(isset($_SESSION['msg'])) : ?>
+    <div class="alert alert-danger">
+        <?= $_SESSION['msg'] ?>
+        <?php unset($_SESSION['msg']); ?>
+    </div>
+<?php endif ?>

@@ -18,11 +18,10 @@ if (! empty($_POST)) {
 ?>
 
 <form action="" method="post">
-    <?php if(isset($_SESSION['msg'])) :
-    ?>
+    <?php if(isset($_SESSION['msg'])) : ?>
         <div class="alert alert-danger">
             <?= $_SESSION['msg'] ?>
-            <?php unset($_SESSION['msg']); ?>
+            <?php unset($_SESSION['msg']) ?>
         </div>
     <?php endif ?>
     <input type="text" name="username" placeholder="Username" required><br />
