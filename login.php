@@ -11,12 +11,12 @@ if (!empty($_POST)) {
 
     } else {
 
-        $_SESSION['msg'] = trans("Invalid username or password");
+        $_SESSION['msg'] = protect("Invalid username or password");
     }
 
 }
 ?>
-
+<?php include('header.php') ?>
 <form action="" method="post">
     <?php if(isset($_SESSION['msg'])) : ?>
         <div class="alert alert-danger">
@@ -24,7 +24,8 @@ if (!empty($_POST)) {
             <?php unset($_SESSION['msg']) ?>
         </div>
     <?php endif ?>
-    <input type="text" name="username" placeholder="<?= trans('Username') ?>"><br />
-    <input type="password" name="password" placeholder="<?= trans('Password') ?>"><br />
-    <input type="submit" value="<?= trans('Log in') ?>">
+    <input type="text" name="username" placeholder="<?= protect('Username') ?>"><br />
+    <input type="password" name="password" placeholder="<?= protect('Password') ?>"><br />
+    <input type="submit" value="<?= protect('Log in') ?>">
 </form>
+<?php include('footer.php') ?>

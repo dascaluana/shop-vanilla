@@ -8,7 +8,7 @@ $GLOBALS["messages"] = [
         'Remove' => 'remove',
         'Name' => 'name',
         'Title' => 'title',
-        'Description' => 'description'
+        'Description' => 'description',
     ]
 ];
 

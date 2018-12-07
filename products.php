@@ -20,11 +20,11 @@ $stmt = $conn->query($sql);
 $stmt->execute();
 
 ?>
-
+<?php include('header.php') ?>
 <table border="1">
     <tr>
-        <th><?= trans('Product') ?></th>
-        <th><?= trans('Add to cart') ?></th>
+        <th><?= protect('Product') ?></th>
+        <th><?= protect('Add to cart') ?></th>
     </tr>
 
     <?php while ($row = $stmt->fetch()) :
@@ -32,21 +32,21 @@ $stmt->execute();
     ?>
         <tr>
             <td>
-                <b><?= trans('Title') ?>: </b><?= $row['title'] ?><br />
-                <b><?= trans('Description') ?>: </b><?= $row['description'] ?><br />
-                <b><?= trans('Price') ?>: </b><?= $row['price'] ?>
+                <b><?= protect('Title') ?>: </b><?= protect($row['title']) ?><br />
+                <b><?= protect('Description') ?>: </b><?= protect($row['description']) ?><br />
+                <b><?= protect('Price') ?>: </b><?= protect($row['price']) ?>
             </td>
             <td align="center">
-                <a href="product.php?id=<?= $id ?>"><?= trans('Edit') ?></a>
-                <a href="products.php?id=<?= $id ?> . '" onclick="return confirm('Are you sure?');"><?= trans('Delete') ?></a>
+                <a href="product.php?id=<?= $id ?>"><?= protect('Edit') ?></a>
+                <a href="products.php?id=<?= $id ?> . '" onclick="return confirm('Are you sure?');"><?= protect('Delete') ?></a>
             </td>
         </tr>
     <?php endwhile ?>
 
 </table>
 
-<a href="product.php"><?= trans('Add') ?></a>
-<a href="logout.php"><?= trans('Logout') ?></a>
+<a href="product.php"><?= protect('Add') ?></a>
+<a href="logout.php"><?= protect('Logout') ?></a>
 
 <?php if(isset($_SESSION['msg'])) : ?>
     <div class="alert alert-danger">
@@ -54,3 +54,11 @@ $stmt->execute();
         <?php unset($_SESSION['msg']); ?>
     </div>
 <?php endif ?>
+
+<?php if (isset($_SESSION['id'])) : ?>
+    <div class="error">
+        <?= $_SESSION['id'] ?>
+    </div>
+    <?php unset($_SESSION['id']); ?>
+<?php endif ?>
+<?php include('footer.php') ?>
