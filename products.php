@@ -2,7 +2,7 @@
 
 include ('common.php');
 
-if(!isset($_SESSION['loggedIn'])) {
+if (!isset($_SESSION['loggedIn'])) {
     header("Location: login.php");
 }
 
@@ -23,8 +23,8 @@ $stmt->execute();
 
 <table border="1">
     <tr>
-        <th>Product</th>
-        <th>Add to cart</th>
+        <th><?= trans('Product') ?></th>
+        <th><?= trans('Add to cart') ?></th>
     </tr>
 
     <?php while ($row = $stmt->fetch()) :
@@ -32,21 +32,21 @@ $stmt->execute();
     ?>
         <tr>
             <td>
-                <b>Title: </b><?= $row['title'] ?><br />
-                <b>Description: </b><?= $row['description'] ?><br />
-                <b>Price: </b><?= $row['price'] ?>
+                <b><?= trans('Title') ?>: </b><?= $row['title'] ?><br />
+                <b><?= trans('Description') ?>: </b><?= $row['description'] ?><br />
+                <b><?= trans('Price') ?>: </b><?= $row['price'] ?>
             </td>
             <td align="center">
-                <a href="product.php?id=<?= $id ?>">Edit</a>
-                <a href="products.php?id=<?= $id ?> . '" onclick="return confirm('Are you sure?');">Delete</a>
+                <a href="product.php?id=<?= $id ?>"><?= trans('Edit') ?></a>
+                <a href="products.php?id=<?= $id ?> . '" onclick="return confirm('Are you sure?');"><?= trans('Delete') ?></a>
             </td>
         </tr>
     <?php endwhile ?>
 
 </table>
 
-<a href="product.php">Add</a>
-<a href="logout.php">Logout</a>
+<a href="product.php"><?= trans('Add') ?></a>
+<a href="logout.php"><?= trans('Logout') ?></a>
 
 <?php if(isset($_SESSION['msg'])) : ?>
     <div class="alert alert-danger">

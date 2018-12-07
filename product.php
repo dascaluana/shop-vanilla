@@ -27,23 +27,23 @@ if (!empty($_POST['save'])) {
     $price = $_POST['price'];
 
     if (empty($title)) {
-        $errors['title'][] = "Title is required";
+        $errors['title'][] = trans('Title is required');
     }
 
     if (!preg_match("/^[a-zA-Z ]*[0-9]*$/", $title)) {
-        $errors['title'][] = "Only letters, numbers and white space allowed";
+        $errors['title'][] = trans('Only letters, numbers and white space allowed');
     }
 
     if (empty($price)) {
-        $errors['price'][] = "Price is required";
+        $errors['price'][] = trans('Price is required');
     }
 
     if (!is_numeric($price)) {
-        $errors['price'][] = "Data entered was not numeric";
+        $errors['price'][] = trans('Data entered was not numeric');
     }
 
     if (empty($description)) {
-        $errors['description'][] = "Description is required";
+        $errors['description'][] = trans('Description is required');
     }
 
     if (!$errors) {
@@ -53,14 +53,14 @@ if (!empty($_POST['save'])) {
             $sql2 = "UPDATE `products` SET title = ?, description = ?, price = ? WHERE id = ?";
             $conn->prepare($sql2)->execute([$title, $description, $price, $_GET['id']]);
 
-            $_SESSION['msg'] = "Data is updated!";
+            $_SESSION['msg'] = trans('Data is updated!');
 
         } else {
 
             $sql2 = "INSERT INTO `products`(`title`, `description`, `price`) VALUES (?, ?, ?)";
             $conn->prepare($sql2)->execute([$title, $description, $price]);
 
-            $_SESSION['msg'] = "Data iserted in DB!";
+            $_SESSION['msg'] = trans('Data inserted in DB!');
         }
 
         header("Location: products.php");
@@ -72,9 +72,9 @@ if (!empty($_POST['save'])) {
 <form action="" method="post">
     <table>
         <tr>
-            <td>Title:</td>
+            <td><?= trans('Title') ?>:</td>
             <td>
-                <input type="text" name="title" placeholder="Title" value="<?= $title ?>">
+                <input type="text" name="title" value="<?= $title ?>">
                 <?php if (isset($errors['title'])) : ?>
                     <?php foreach ($errors['title'] as $val) : ?>
                         <div class="error"><?= $val ?></div>
@@ -84,9 +84,9 @@ if (!empty($_POST['save'])) {
         </tr>
 
         <tr>
-            <td>Description:</td>
+            <td><?= trans('Description') ?>:</td>
             <td>
-                <textarea type="text" name="description" rows="5" cols="22" placeholder="Description"><?= $description; ?></textarea>
+                <textarea type="text" name="description" rows="5" cols="22"><?= $description; ?></textarea>
                 <?php if (isset($errors['description'])) : ?>
                     <?php foreach ($errors['description'] as $val) : ?>
                         <div class="error"><?= $val ?></div>
@@ -96,9 +96,9 @@ if (!empty($_POST['save'])) {
         </tr>
 
         <tr>
-            <td>Price:</td>
+            <td><?= trans('Price') ?>:</td>
             <td>
-                <input type="text" name="price" placeholder="Price" value="<?= $price ?>">
+                <input type="text" name="price"  value="<?= $price ?>">
                 <?php if (isset($errors['price'])) : ?>
                     <?php foreach ($errors['price'] as $val) : ?>
                         <div class="error"><?= $val ?></div>
@@ -108,16 +108,16 @@ if (!empty($_POST['save'])) {
         </tr>
 
         <tr>
-            <td>Image:</td>
+            <td><?= trans('Image') ?>:</td>
             <td>
-                <input name="text" name="image" placeholder="Image" value="" size="11">
-                <input type='submit' name='browse' value='Browse'/>
+                <input name="text" name="image" value="" size="11">
+                <input type="submit" name="browse" value="<?= trans('Browse') ?>"/>
             </td>
         </tr>
 
         <tr>
-            <td><a href="products.php">Products</a></td>
-            <td><input type='submit' name='save' value='Save'/></td>
+            <td><a href="products.php"><?= trans('Products') ?></a></td>
+            <td><input type="submit" name="save" value="<?= trans('Save') ?>"/></td>
         </tr>
     </table>
 </form>

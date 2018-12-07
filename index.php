@@ -2,7 +2,7 @@
 
 include ('common.php');
 
-if(!isset($_SESSION['id'])) {
+if (!isset($_SESSION['id'])) {
     $_SESSION['id']= [];
 }
 
@@ -24,23 +24,23 @@ $stmt->execute($arr);
 
 <table border="1">
     <tr>
-        <th>Product</th>
-        <th>Add to cart</th>
+        <th><?= trans('Product') ?></th>
+        <th><?= trans('Add to cart') ?></th>
     </tr>
 
     <?php while ($row = $stmt->fetch()) :
         $id = $row['id']; ?>
         <tr>
             <td>
-                <b>Title: </b><?= $row['title'] ?><br />
-                <b>Description: </b><?= $row['description'] ?><br />
-                <b>Price: </b><?= $row['price'] ?>
+                <b><?= trans('Title') ?>: </b><?= $row['title'] ?><br />
+                <b><?= trans('Description') ?>: </b><?= $row['description'] ?><br />
+                <b><?= trans('Price') ?>: </b><?= $row['price'] ?>
             </td>
             <td align="center">
-                <a href="index.php?id=<?= $id ?>">Add</a>
+                <a href="index.php?id=<?= $id ?>"><?= trans('Add') ?></a>
             </td>
         </tr>
     <?php endwhile ?>
 
 </table>
-<a href="cart.php">Go to cart</a>
+<a href="cart.php"><?= trans('Go to cart') ?></a>

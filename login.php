@@ -2,16 +2,16 @@
 
 include ('common.php');
 
-if (! empty($_POST)) {
+if (!empty($_POST)) {
 
-    if ($_POST['username'] == $usernameAdmin && $_POST['password'] == $passwordAdmin) {
+    if ($_POST['username'] == USER_ADMIN && $_POST['password'] == PASSWORD_ADMIN) {
 
         $_SESSION["loggedIn"] = true;
         header("Location: products.php");
 
     } else {
 
-        $_SESSION['msg'] = "Invalid username and password";
+        $_SESSION['msg'] = trans("Invalid username or password");
     }
 
 }
@@ -24,7 +24,7 @@ if (! empty($_POST)) {
             <?php unset($_SESSION['msg']) ?>
         </div>
     <?php endif ?>
-    <input type="text" name="username" placeholder="Username" required><br />
-    <input type="password" name="password" placeholder="Password" required><br />
-    <input type="submit" value="Log in">
+    <input type="text" name="username" placeholder="<?= trans('Username') ?>"><br />
+    <input type="password" name="password" placeholder="<?= trans('Password') ?>"><br />
+    <input type="submit" value="<?= trans('Log in') ?>">
 </form>

@@ -17,22 +17,22 @@ $sql = "SELECT * FROM `products` WHERE `id` IN ($in)";
 $stmt = $conn->prepare($sql);
 $stmt->execute($arr);
 
-
 $msg = "";
 $data = [];
+
 if (isset($_POST['submit']))  {
 
     if ($_POST["details"] == "" || $_POST["name"] == "" || $_POST["message"] == "") {
-        $_SESSION['msg'] = "Fill All Fields..";
+        $_SESSION['msg'] = trans('Fill All Fields..');
     } else {
         $email = $_POST['details'];
         $email = filter_var($email, FILTER_SANITIZE_EMAIL);
         $email = filter_var($email, FILTER_VALIDATE_EMAIL);
 
         if (!$email) {
-            $_SESSION['msg'] = "Invalid Sender's Email";
+            $_SESSION['msg'] = trans("Invalid Sender's Email");
         } else {
-            $admin_email = $adminEmail;
+            $admin_email = EMAIL_ADMIN;
             $subject = $_POST['name'];
             $message = $_POST['message'];
             $message = wordwrap($message, 70);
@@ -41,12 +41,12 @@ if (isset($_POST['submit']))  {
             $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
             $headers .= 'From: '.$email."\r\n";
 
-            if($_SESSION['id']){
+            if ($_SESSION['id']) {
 
                 $table = '<table border="1">';
-                $table .= '<tr><th>Title</th><th>Description</th><th>Price</th></tr>';
+                $table .= '<tr><th>' . trans('Title') . '</th><th>' . trans('Title') . '</th><th>' . trans('Price') . '</th></tr>';
 
-                while(($row = $stmt->fetch()) !== false){
+                while (($row = $stmt->fetch()) !== false) {
 
                     $table .= '<tr><td>';
                     $table .= $row['title'];
@@ -58,8 +58,6 @@ if (isset($_POST['submit']))  {
                     $table .= $row['price'];
                     $table .= '</td></tr>';
 
-                    //array_push($data, $row['title'], $row['description'], $row['price']);
-
                     unset($_SESSION['id'][0]);
                     $_SESSION['id'] = array_values($_SESSION['id']);
                 }
@@ -68,10 +66,10 @@ if (isset($_POST['submit']))  {
 
             }
 
-            $message = "Message:\n" . $message . "\n" . $table;
+            $message = trans('Message') . ":\n" . $message . "\n" . $table;
 
             mail($admin_email, $subject, $message, $headers);
-            $_SESSION['msg'] = "Your mail has been sent successfuly!";
+            $_SESSION['msg'] = trans('Your mail has been sent successfuly!');
         }
     }
 
@@ -82,8 +80,8 @@ if (isset($_POST['submit']))  {
 
 <table border="1">
     <tr>
-        <th>Product</th>
-        <th>Add to cart</th>
+        <th><?= trans('Product') ?></th>
+        <th><?= trans('Add to cart') ?></th>
     </tr>
 
     <?php while ($row = $stmt->fetch()) :
@@ -91,12 +89,12 @@ if (isset($_POST['submit']))  {
     ?>
         <tr>
             <td>
-                <b>Title: </b><?= $row['title'] ?><br />
-                <b>Description: </b><?= $row['description'] ?><br />
-                <b>Price: </b><?= $row['price'] ?>
+                <b><?= trans('Title') ?>: </b><?= $row['title'] ?><br />
+                <b><?= trans('Description') ?>: </b><?= $row['description'] ?><br />
+                <b><?= trans('Price') ?>: </b><?= $row['price'] ?>
             </td>
             <td align="center">
-                <a href="cart.php?id=<?= $id ?>">Remove</a>
+                <a href="cart.php?id=<?= $id ?>"><?= trans('Remove') ?></a>
             </td>
         </tr>
     <?php endwhile ?>
@@ -105,7 +103,7 @@ if (isset($_POST['submit']))  {
 <br />
 
 <form action="" method="post">
-    <?php if(isset($_SESSION['msg'])) : ?>
+    <?php if (isset($_SESSION['msg'])) : ?>
         <div class="alert alert-danger">
             <?= $_SESSION['msg'] ?>
             <?php unset($_SESSION['msg']); ?>
@@ -114,23 +112,23 @@ if (isset($_POST['submit']))  {
 
     <table>
         <tr>
-            <td>Name:</td>
-            <td><input type="text" name="name" placeholder="Name" value=""></td>
+            <td><?= trans('Name') ?>:</td>
+            <td><input type="text" name="name" value=""></td>
         </tr>
 
         <tr>
-            <td>Email:</td>
-            <td><input type="text" name="details" placeholder="E-mail" value=""></td>
+            <td><?= trans('Email') ?>:</td>
+            <td><input type="text" name="details" value=""></td>
         </tr>
 
         <tr>
-            <td>Comments:</td>
-            <td><textarea name="message" rows="5" cols="22" placeholder="Comments"></textarea></td>
+            <td><?= trans('Comments') ?>:</td>
+            <td><textarea name="message" rows="5" cols="22"></textarea></td>
         </tr>
 
         <tr>
-            <td><a href="index.php">Go to index</a></td>
-            <td><input type='submit' name='submit' value='Checkout'/></td>
+            <td><a href="index.php"><?= trans('Go to index') ?></a></td>
+            <td><input type="submit" name="submit" value="<?= trans('Checkout') ?>"/></td>
         </tr>
     </table>
 
