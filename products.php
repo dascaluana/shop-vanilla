@@ -24,7 +24,8 @@ $stmt->execute();
 <table border="1">
     <tr>
         <th><?= protect('Product') ?></th>
-        <th><?= protect('Add to cart') ?></th>
+        <th><?= protect('Image') ?></th>
+        <th><?= protect('Edit/Delete') ?></th>
     </tr>
 
     <?php while ($row = $stmt->fetch()) :
@@ -32,9 +33,22 @@ $stmt->execute();
     ?>
         <tr>
             <td>
-                <b><?= protect('Title') ?>: </b><?= protect($row['title']) ?><br />
-                <b><?= protect('Description') ?>: </b><?= protect($row['description']) ?><br />
-                <b><?= protect('Price') ?>: </b><?= protect($row['price']) ?>
+                <?php if (strlen($row['title'])) : ?>
+                    <b><?= protect('Title') ?>: </b><?= protect($row['title']) ?><br />
+                <?php endif ?>
+
+                <?php if (strlen($row['description'])) : ?>
+                    <b><?= protect('Description') ?>: </b><?= protect($row['description']) ?><br />
+                <?php endif ?>
+
+                <?php if (strlen($row['price'])) : ?>
+                    <b><?= protect('Price') ?>: </b><?= protect($row['price']) ?>
+                <?php endif ?>
+            </td>
+            <td>
+                <?php if (strlen($row['image'])) : ?>
+                    <img width="100" src="images/<?= $row['image'] ?>">
+                <?php endif ?>
             </td>
             <td align="center">
                 <a href="product.php?id=<?= $id ?>"><?= protect('Edit') ?></a>
@@ -61,4 +75,5 @@ $stmt->execute();
     </div>
     <?php unset($_SESSION['id']); ?>
 <?php endif ?>
+
 <?php include('footer.php') ?>

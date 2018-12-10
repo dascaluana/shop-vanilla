@@ -44,17 +44,17 @@ if (isset($_POST['submit']))  {
             if ($_SESSION['id']) {
 
                 $table = '<table border="1">';
-                $table .= '<tr><th>' . protect('Title') . '</th><th>' . protect('Title') . '</th><th>' . protect('Price') . '</th></tr>';
+                $table .= '<tr><th>' . protect('Image') . '</th><th>' . protect('Title') . '</th><th>' . protect('Description') . '</th><th>' . protect('Price') . '</th></tr>';
 
                 while (($row = $stmt->fetch()) !== false) {
 
                     $table .= '<tr><td>';
+                    $table .= protect($row['image']);
+                    $table .= '</td><td>';
                     $table .= protect($row['title']);
-                    $table .= '</td>';
-                    $table .= '<td>';
+                    $table .= '</td><td>';
                     $table .= protect($row['description']);
-                    $table .= '</td>';
-                    $table .= '<td>';
+                    $table .= '</td><td>';
                     $table .= protect($row['price']);
                     $table .= '</td></tr>';
 
@@ -81,17 +81,31 @@ if (isset($_POST['submit']))  {
 <table border="1">
     <tr>
         <th><?= protect('Product') ?></th>
-        <th><?= protect('Add to cart') ?></th>
+        <th><?= protect('Image') ?></th>
+        <th><?= protect('Remove') ?></th>
     </tr>
 
     <?php while ($row = $stmt->fetch()) :
         $id = $row['id'];
-    ?>
+        ?>
         <tr>
             <td>
-                <b><?= protect('Title') ?>: </b><?= protect($row['title']) ?><br />
-                <b><?= protect('Description') ?>: </b><?= protect($row['description']) ?><br />
-                <b><?= protect('Price') ?>: </b><?= protect($row['price']) ?>
+                <?php if (strlen($row['title'])) : ?>
+                    <b><?= protect('Title') ?>: </b><?= protect($row['title']) ?><br />
+                <?php endif ?>
+
+                <?php if (strlen($row['description'])) : ?>
+                    <b><?= protect('Description') ?>: </b><?= protect($row['description']) ?><br />
+                <?php endif ?>
+
+                <?php if (strlen($row['price'])) : ?>
+                    <b><?= protect('Price') ?>: </b><?= protect($row['price']) ?>
+                <?php endif ?>
+            </td>
+            <td>
+                <?php if (strlen($row['image'])) : ?>
+                    <img width="100" src="images/<?= $row['image'] ?>">
+                <?php endif ?>
             </td>
             <td align="center">
                 <a href="cart.php?id=<?= $id ?>"><?= protect('Remove') ?></a>

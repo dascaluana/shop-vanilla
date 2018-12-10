@@ -1,11 +1,12 @@
 <?php
 
 include ('common.php');
-include ('upload.php');
 
 $title = $description = $price = "";
 
 $errors = [];
+
+$ok = 0;
 
 if (isset($_GET['id'])) {
 
@@ -26,68 +27,94 @@ if (isset($_GET['id'])) {
     }
 }
 
-if (!empty($_POST['save'])) {
+if (!empty($_POST['submit'])) {
 
     $title = $_POST['title'];
     $description = $_POST['description'];
     $price = $_POST['price'];
-    $image = $_POST['image'];
 
     if (empty($title)) {
         $errors['title'][] = protect('Title is required');
     }
 
     if (!preg_match("/^[a-zA-Z ]*[0-9]*$/", $title)) {
-        $errors['title'][] = protect('Only letters, numbers and white space allowed');
+        $errors['title'][] = trans('Only letters, numbers and white space allowed');
     }
 
     if (empty($price)) {
-        $errors['price'][] = protect('Price is required');
+        $errors['price'][] = trans('Price is required');
     }
 
     if (!is_numeric($price)) {
-        $errors['price'][] = protect('Data entered was not numeric');
+        $errors['price'][] = trans('Data entered was not numeric');
     }
 
     if (empty($description)) {
-        $errors['description'][] = protect('Description is required');
+        $errors['description'][] = trans('Description is required');
     }
 
     if (!$errors) {
 
-        if (isset($_GET['id'])) {
+        $target_dir = "images/";
+        $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
 
-            //$uploadOk = uploadImg();
+        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
-           // if ($uploadOk == 0) {
-                //$errors['img'][] = "Sorry your file was not uploaded";
-           // } else {
+        if (isset($_POST['submit']) && !empty($_FILES["fileToUpload"]["name"])) {
 
-            $sql2 = "UPDATE `products` SET title = ?, description = ?, price = ? WHERE id = ?";
-            $conn->prepare($sql2)->execute([stripTags($title), $description, stripTags($price), stripTags($_GET['id'])]);
+            $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
 
-            $_SESSION['msg'] = protect('Data is updated!');
-
-           // }
-
-
-
-        } else {
-
-            $sql2 = "INSERT INTO `products`(`title`, `description`, `price`) VALUES (?, ?, ?)";
-            $conn->prepare($sql2)->execute([stripTags($title), $description, stripTags($price)]);
-
-            $_SESSION['msg'] = protect('Data inserted in DB!');
+            if ($check === false) {
+                $errors['upload'][] = trans('File is not an image.');
+            }
         }
 
-        header("Location: products.php");
+        if ($_FILES["fileToUpload"]["size"] > 500000) {
+            $errors['upload'][] = trans('Error, your file is too large.');
+        }
+
+        if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg") {
+            $errors['upload'][] = trans('Error, only jpg, jpeg and png files are allowed.');
+        }
+
+
+        if (!$errors) {
+            if (isset($_GET['id'])) {
+                $id = $_GET['id'];
+
+                $_SESSION['msg'] = trans('Data is updated!');
+
+            } else {
+                $sql2 = "INSERT INTO `products`(`title`, `description`, `price`) VALUES ('', '', '')";
+
+                $conn->exec($sql2);
+                $last_id = $conn->lastInsertId();
+                $id = $last_id;
+
+                $_SESSION['msg'] = trans('Data inserted in DB!');
+            }
+
+            $sql2 = "UPDATE `products` SET title = ?, description = ?, price = ?, image = ? WHERE id = ?";
+            $fileToUpload = $target_file;
+            $file = $id . '.' . $imageFileType;
+            $target_file = $target_dir . $file;
+
+            if (!move_uploaded_file($_FILES['fileToUpload']['tmp_name'], $target_file)) {
+                $errors['upload'][] = trans('File wasn\'t uploaded');
+            }
+
+            if (!$errors) {
+                $conn->prepare($sql2)->execute([stripTags($title), $description, stripTags($price), $file, stripTags($id)]);
+                header("Location: products.php");
+            }
+        }
     }
 }
 
 ?>
 <?php include('header.php') ?>
 
-<form action="" method="post">
+<form action="" method="post" enctype="multipart/form-data">
     <table>
         <tr>
             <td><?= protect('Title') ?>:</td>
@@ -95,7 +122,7 @@ if (!empty($_POST['save'])) {
                 <input type="text" name="title" value="<?= protect($title) ?>">
                 <?php if (isset($errors['title'])) : ?>
                     <?php foreach ($errors['title'] as $val) : ?>
-                        <div class="error"><?= $val ?></div>
+                        <div class="error"><?= protect($val) ?></div>
                     <?php endforeach ?>
                 <?php endif ?>
             </td>
@@ -107,7 +134,7 @@ if (!empty($_POST['save'])) {
                 <textarea type="text" name="description" rows="5" cols="22"><?= protect($description); ?></textarea>
                 <?php if (isset($errors['description'])) : ?>
                     <?php foreach ($errors['description'] as $val) : ?>
-                        <div class="error"><?= $val ?></div>
+                        <div class="error"><?= protect($val) ?></div>
                     <?php endforeach ?>
                 <?php endif ?>
             </td>
@@ -119,7 +146,7 @@ if (!empty($_POST['save'])) {
                 <input type="text" name="price"  value="<?= protect($price) ?>">
                 <?php if (isset($errors['price'])) : ?>
                     <?php foreach ($errors['price'] as $val) : ?>
-                        <div class="error"><?= $val ?></div>
+                        <div class="error"><?= protect($val) ?></div>
                     <?php endforeach ?>
                 <?php endif ?>
             </td>
@@ -128,22 +155,22 @@ if (!empty($_POST['save'])) {
         <tr>
             <td><?= protect('Image') ?>:</td>
             <td>
-                <input name="text" name="image" value="" size="11">
-                <form action="upload.php" method="post" enctype="multipart/form-data">
-                    <input type="file" name="fileToUpload" id="fileToUpload">
-                </form>
+                <?php if (isset($_GET['id'])) : ?>
+                    <img src="images/<?= $image ?>">
+                <?php endif ?>
+                <input type="file" name="fileToUpload" id="fileToUpload">
+                <?php if (isset($errors['upload'])) : ?>
+                    <?php foreach ($errors['upload'] as $val) : ?>
+                        <div class="error"><?= protect($val) ?></div>
+                    <?php endforeach ?>
+                <?php endif ?>
             </td>
         </tr>
 
         <tr>
             <td><a href="products.php"><?= protect('Products') ?></a></td>
-            <td><input type="submit" name="save" value="<?= protect('Save') ?>"/></td>
+            <td><input type="submit" name="submit" value="<?= protect('Save') ?>"/></td>
         </tr>
     </table>
 </form>
-<?php if (isset($_SESSION['img'])) : ?>
-    <div class="error"><?= $_SESSION['img'] ?></div>
-    <?php unset($_SESSION['id']); ?>
-<?php endif ?>
-
 <?php include('footer.php') ?>
