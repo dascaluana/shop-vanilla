@@ -22,7 +22,7 @@ $data = [];
 
 if (isset($_POST['submit']))  {
 
-    if ($_POST["details"] == "" || $_POST["name"] == "" || $_POST["message"] == "") {
+    if ($_POST['details'] == "" || $_POST['name'] == "" || $_POST['message'] == "") {
         $_SESSION['msg'] = protect('Fill All Fields..');
     } else {
         $email = $_POST['details'];
@@ -43,6 +43,8 @@ if (isset($_POST['submit']))  {
 
             if ($_SESSION['id']) {
 
+                $prodId = [];
+
                 $table = '<table border="1">';
                 $table .= '<tr><th>' . protect('Image') . '</th><th>' . protect('Title') . '</th><th>' . protect('Description') . '</th><th>' . protect('Price') . '</th></tr>';
 
@@ -58,17 +60,34 @@ if (isset($_POST['submit']))  {
                     $table .= protect($row['price']);
                     $table .= '</td></tr>';
 
+                    array_push($prodId, $row['id']);
+
                     unset($_SESSION['id'][0]);
                     $_SESSION['id'] = array_values($_SESSION['id']);
                 }
 
                 $table .= '</table>';
-
             }
 
-            $message = protect('Message') . ":\n" . $message . "\n" . $table;
+            $msg = protect('Message') . ":\n" . $message . "\n" . $table;
 
-            mail($admin_email, $subject, $message, $headers);
+            mail($admin_email, $subject, $msg, $headers);
+
+            $date = date('Y-m-d H:i:s');
+
+            $sql = "INSERT INTO `order`(`created_at`, `name`, `email`, `comments`) VALUES (?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$date, $subject, $email, $message]);
+
+            $last_id = $conn->lastInsertId();
+            $id = $last_id;
+
+            foreach ($prodId as $val) {
+                $sql = "INSERT INTO `order_products`(`order_id`, `product_id`) VALUES (?, ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute([$id, $val]);
+            }
+
             $_SESSION['msg'] = protect('Your mail has been sent successfuly!');
         }
     }

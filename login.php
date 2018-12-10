@@ -11,7 +11,7 @@ if (!empty($_POST)) {
 
     } else {
 
-        $_SESSION['msg'] = protect("Invalid username or password");
+        $_SESSION['msg'] = protect('Invalid username or password');
     }
 
 }
