@@ -5,17 +5,30 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Post;
+use App\Repositories\Posts;
+
 
 class PostController extends Controller
 {
-    public function index()
+    public function __construct()
     {
-        return view('posts.index');
+        $this->middleware('auth')->except(['index', 'show']);
     }
 
-    public function show()
+    public function index(Posts $posts)
     {
-        return view('posts.show');
+        $posts = $posts->all();
+
+//        $posts = Post::latest()
+//            ->filter(request(['month', 'year']))
+//            ->get();
+
+        return view('posts.index', compact('posts'));
+    }
+
+    public function show(Post $post)
+    {
+        return view('posts.show', compact('post'));
     }
 
     public function create()
@@ -25,14 +38,26 @@ class PostController extends Controller
 
     public function store()
     {
-        // Create a new post using the request data
-        $post = new Post;
+        /*
+        Create a new post using the request data
 
-        $post->title = request('title');
-        $post->body = request('body');
+         $post->title = request('title');
+         $post->body = request('body');
 
-        // Save it to the DB
-        $post->save();
+         Save it to the DB
+         $post->save();
+         */
+
+        $this->validate(request(), [
+           'title' => 'required',
+           'body' => 'required'
+        ]);
+
+        auth()->user()->publish(
+            new Post(request(['title', 'body']))
+        );
+
+
 
         // Add them redirect to the home page
         return redirect('/');

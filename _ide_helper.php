@@ -1688,7 +1688,7 @@ namespace Illuminate\Support\Facades {
         }
         
         /**
-         * Log a user into the application without sessions or cookies.
+         * Log a user into the application without registration or cookies.
          *
          * @param array $credentials
          * @return bool 
@@ -1700,7 +1700,7 @@ namespace Illuminate\Support\Facades {
         }
         
         /**
-         * Log the given user ID into the application without sessions or cookies.
+         * Log the given user ID into the application without registration or cookies.
          *
          * @param mixed $id
          * @return \App\User|false 
@@ -1800,7 +1800,7 @@ namespace Illuminate\Support\Facades {
         }
         
         /**
-         * Invalidate other sessions for the current user.
+         * Invalidate other registration for the current user.
          * 
          * The application must be using the AuthenticateSession middleware.
          *
