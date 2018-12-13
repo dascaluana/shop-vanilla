@@ -20,6 +20,9 @@ class PostController extends Controller
         //$posts = $posts->all();
 
         $posts = Post::latest()
+            ->with([
+                'user',
+            ])
             ->filter(request(['month', 'year']))
             ->get();
 
