@@ -26,6 +26,8 @@ class PostController extends Controller
             ->filter(request(['month', 'year']))
             ->get();
 
+        //dd($posts);
+
         return view('posts.index', compact('posts'));
     }
 
