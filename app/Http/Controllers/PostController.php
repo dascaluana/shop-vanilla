@@ -15,13 +15,13 @@ class PostController extends Controller
         $this->middleware('auth')->except(['index', 'show']);
     }
 
-    public function index(Posts $posts)
+    public function index()
     {
-        $posts = $posts->all();
+        //$posts = $posts->all();
 
-//        $posts = Post::latest()
-//            ->filter(request(['month', 'year']))
-//            ->get();
+        $posts = Post::latest()
+            ->filter(request(['month', 'year']))
+            ->get();
 
         return view('posts.index', compact('posts'));
     }
@@ -57,6 +57,9 @@ class PostController extends Controller
             new Post(request(['title', 'body']))
         );
 
+        session()->flash(
+            'message', 'Your post has now been publised.'
+        );
 
 
         // Add them redirect to the home page

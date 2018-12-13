@@ -28,6 +28,8 @@ Route::post('/posts', 'PostController@store');
 
 Route::get('/posts/{post}', 'PostController@show');
 
+Route::get('/posts/tags/{tag}', 'TagsController@index');
+
 Route::post('/posts/{post}/comments', 'CommentsController@store');
 
 Route::get('/home', 'HomeController@index')->name('home');
