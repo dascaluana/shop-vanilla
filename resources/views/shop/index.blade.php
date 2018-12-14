@@ -3,8 +3,8 @@
 @section('content')
 <table border="1">
     <tr>
-        <th>Product</th>
-        <th>Add to cart</th>
+        <th>{{ __('messages.Product') }}</th>
+        <th>{{ __('messages.Add to cart') }}</th>
     </tr>
     <tr>
         @foreach ($products as $product)
@@ -13,4 +13,5 @@
     </tr>
 </table>
 
+<a href="/cart">{{ __('messages.Go to cart') }}</a>
 @endsection

@@ -18,7 +18,7 @@ class CreateOrdersTable extends Migration
             $table->string('name');
             $table->string('email');
             $table->text('comments');
-            $table->timestamp('created_at')->nullable();
+            $table->timestamps();
         });
 
         Schema::create('order_product', function (Blueprint $table) {

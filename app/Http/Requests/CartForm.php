@@ -6,7 +6,7 @@ use App\Mail\OrderCreated;
 use App\User;
 use Illuminate\Foundation\Http\FormRequest;
 
-class RegistrationForm extends FormRequest
+class CartForm extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,23 +28,8 @@ class RegistrationForm extends FormRequest
         return [
             'name' => 'required',
             'email' => 'required|email',
-            'password' => 'required|confirmed'
+            'comments' => 'required|min:5'
         ];
     }
 
-    public function persist()
-    {
-        //Create and save the user
-
-        $data = request(['name', 'email', 'password']);
-        $data['password'] = bcrypt($data['password']);
-
-        $user = User::create($data);
-
-        //Sign them in
-
-        auth()->login($user);
-
-        \Mail::to($user)->send(new OrderCreated($user));
-    }
 }
