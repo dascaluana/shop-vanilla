@@ -34,7 +34,7 @@ class LoginController extends Controller
 
         $validator->validate();
 
-        return redirect()->route('products');
+        return redirect('products');
     }
 
     public function destroy()

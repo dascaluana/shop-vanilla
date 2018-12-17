@@ -58,3 +58,9 @@ Route::get('/login', 'LoginController@create')->name('login');
 
 Route::post('/login', 'LoginController@store')->name('login-action');
 
+Route::resource('products', 'ProductController');
+
+Route::get('/orders', 'OrderController@index');
+
+Route::get('/order/{order}', 'OrderController@show');
+

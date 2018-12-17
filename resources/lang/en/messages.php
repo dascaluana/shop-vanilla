@@ -9,8 +9,15 @@ return [
     'Description' => 'description',
     'Price' => 'price',
     'Add to cart' => 'Add to cart',
-    'Product' => 'product',
+    'Product' => 'Product',
     'Checkout' => 'Checkout',
     'Email' => 'Email',
-    'Comments' => 'Comments'
+    'Comments' => 'Comments',
+    'Logout' => 'Logout',
+    'Delete' => 'Delete',
+    'Edit' => 'Edit',
+    'Save' => 'Save',
+    'Products' => 'Products',
+    'Date' => 'Date',
+    'View' => 'View'
 ];

@@ -8,6 +8,8 @@ class Product extends Model
 {
     protected $table = "products";
 
+    public $timestamps = null;
+
     protected $fillable = [
         'title', 'description', 'price', 'image',
     ];
@@ -19,4 +21,5 @@ class Product extends Model
     {
         return $this->belongsToMany(Order::class);
     }
+
 }
