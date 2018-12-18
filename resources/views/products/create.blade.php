@@ -26,6 +26,15 @@
             </td>
         </tr>
         <tr>
+            <td>{{ __('messages.Image') }}:</td>
+            <td>
+                <form action="" method="post" enctype="multipart/form-data">
+                    @csrf
+                    <input type="file" class="form-control" name="image" id="image"/>
+                </form>
+            </td>
+        </tr>
+        <tr>
             <td><a href="/products">{{ __('messages.Products') }}</a></td>
             <td><input type="submit" name="submit" value="{{ __('messages.Save') }}"/></td>
         </tr>

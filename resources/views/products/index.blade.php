@@ -10,6 +10,7 @@
     <table border="1">
         <tr>
             <th>{{ __('messages.Product') }}</th>
+            <th>{{ __('messages.Image') }}</th>
             <th>{{ __('messages.Edit') }}/{{ __('messages.Delete') }}</th>
         </tr>
         <tr>

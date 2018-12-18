@@ -19,5 +19,7 @@ return [
     'Save' => 'Save',
     'Products' => 'Products',
     'Date' => 'Date',
-    'View' => 'View'
+    'View' => 'View',
+    'Orders' => 'Orders',
+    'Image' => 'Image'
 ];

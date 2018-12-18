@@ -6,18 +6,32 @@ use App\Order;
 
 class OrderController extends Controller
 {
+    /**
+     * @param Order $orders
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     *
+     */
     public function index(Order $orders)
     {
-        $orders = $orders->get();
+        $orders = $orders
+            ->with([
+                'products',
+            ])
+            ->get();
+
+        //dd($orders);
 
         return view('order.index', compact('orders'));
     }
 
+    /**
+     * @param Order $order
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function show(Order $order)
     {
-        $products = $order->products();
+        $products = $order->products()->get();
 
-        //dd($products);
         return view('order.view', compact('products'));
     }
 }

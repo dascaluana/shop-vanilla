@@ -23,6 +23,18 @@
         @endif
     </td>
 
+    <?php
+        $product = '';
+        /** @var \App\Order $order */
+        foreach($order->products as $val) {
+            $product .= '- ' . $val->title . PHP_EOL;
+        }
+    ?>
+
+    <td>
+        <?= nl2br($product) ?>
+    </td>
+
     <td>
         <a href="order/{{ $order->id }}">{{ __('messages.View') }}</a>
     </td>

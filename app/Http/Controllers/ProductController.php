@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 
 class ProductController extends Controller
 {
@@ -42,6 +41,7 @@ class ProductController extends Controller
             'title' => 'required',
             'description' => 'required',
             'price' => 'required|numeric',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg',
         ]);
 
         /** @var Product $product */
@@ -53,6 +53,19 @@ class ProductController extends Controller
         $product->image = '';
 
         $product->save();
+
+        $lastId = $product->id;
+
+        $file = $request->file('image');
+        $fileName = $lastId . '.' . $file->getClientOriginalExtension();
+
+        $file->storeAs('images', $fileName);
+
+        $product->newQuery()
+            ->where('id', $lastId)
+            ->update([
+                'image' => $fileName
+            ]);
 
         return redirect('products')->with('success', 'Product has been added');
 
@@ -96,12 +109,20 @@ class ProductController extends Controller
             'price' => 'required|numeric',
         ]);
 
+        //dd($request->file('image'));
+
+        $file = $request->file('image');
+        $fileName = $product->id . '.' . $file->getClientOriginalExtension();
+
+        $file->storeAs('images', $fileName);
+
         $product->newQuery()
             ->where('id', $product->getKey())
             ->update([
                 'title' => $request->get('title'),
                 'description' => $request->get('description'),
                 'price' => $request->get('price'),
+                'image' => $fileName
             ]);
 
         return redirect('/products')->with('success', 'Product has been updated');

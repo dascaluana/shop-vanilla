@@ -12,6 +12,9 @@
             <b>{{ __('messages.Price') }}: </b> {{ $product->price }}
         @endif
     </td>
+    <td>
+        <img src="{{ asset('images/' . $product->image) }}" width="50" height="50"/>
+    </td>
     <td align="center">
         <a href="/cart/{{ $product->id }}">{{ __('messages.Remove') }}</a>
     </td>

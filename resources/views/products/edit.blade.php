@@ -1,6 +1,6 @@
 @extends ('layouts2.master')
 @section('content')
-<form method="post" action="{{action('ProductController@update', $product->id)}}">
+<form method="post" action="{{action('ProductController@update', $product->id)}}" enctype="multipart/form-data">
     {{ csrf_field() }}
 
     <input name="_method" type="hidden" value="PATCH">
@@ -26,8 +26,17 @@
                 <input type="text" name="price"  value="{{ $product->price }}">
             </td>
         </tr>
+
         <tr>
-            <td><a href="/products">{{ __('messages.Products') }}</a></td>
+            <td>{{ __('messages.Image') }}:</td>
+            <td>
+                <img src="{{ asset('images/' . $product->image) }}" width="50" height="50"/>
+                <input type="file" class="form-control" name="image" id="image"/>
+            </td>
+        </tr>
+
+        <tr>
+            <td><a href="/products">{{ __('messages.Products') }}</a>
             <td><input type="submit" name="submit" value="{{ __('messages.Save') }}"/></td>
         </tr>
     </table>
