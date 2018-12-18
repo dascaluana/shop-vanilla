@@ -13,7 +13,7 @@
         @endif
     </td>
     <td>
-        <img src="{{ asset('images/' . $product->image) }}" width="50" height="50"/>
+        <img src="{{ asset('storage/images/' . $product->image) }}" width="50" height="50"/>
     </td>
     <td align="center">
         <a href="{{ action("ProductController@edit", $product->id) }}">{{ __('messages.Edit') }}</a>

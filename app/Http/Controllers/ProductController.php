@@ -114,7 +114,7 @@ class ProductController extends Controller
         $file = $request->file('image');
         $fileName = $product->id . '.' . $file->getClientOriginalExtension();
 
-        $file->storeAs('images', $fileName);
+        $file->storeAs('public/images', $fileName);
 
         $product->newQuery()
             ->where('id', $product->getKey())
