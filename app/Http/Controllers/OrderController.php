@@ -19,8 +19,6 @@ class OrderController extends Controller
             ])
             ->get();
 
-        //dd($orders);
-
         return view('order.index', compact('orders'));
     }
 
@@ -30,8 +28,6 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        $products = $order->products()->get();
-
-        return view('order.view', compact('products'));
+        return view('order.show', compact('order'));
     }
 }

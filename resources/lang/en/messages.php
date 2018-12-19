@@ -21,5 +21,6 @@ return [
     'Date' => 'Date',
     'View' => 'View',
     'Orders' => 'Orders',
-    'Image' => 'Image'
+    'Image' => 'Image',
+    'Info Order' => 'Info Order'
 ];

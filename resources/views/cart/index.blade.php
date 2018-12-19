@@ -1,18 +1,15 @@
 @extends ('layouts2.master')
 
 @section('content')
-    @if(session()->get('success'))
-        <div class="alert alert-success">
-            {{ session()->get('success') }}
-        </div><br />
-    @endif
 
-    @if($products->count())
+<form method="POST" action="/cart">
+    {{ csrf_field() }}
+@if ((session()->get('id')))
     <table border="1">
         <tr>
             <th>{{ __('messages.Product') }}</th>
             <th>{{ __('messages.Image') }}</th>
-            <th>{{ __('messages.Edit') }}/{{ __('messages.Delete') }}</th>
+            <th>{{ __('messages.Remove') }}</th>
         </tr>
         @foreach ($products as $product)
             <tr>
@@ -35,22 +32,35 @@
                     @endif
                 </td>
                 <td align="center">
-                    <a href="{{ action("ProductController@edit", $product->id) }}">{{ __('messages.Edit') }}</a>
-
-                    <form method="post" action="{{action('ProductController@destroy', $product->id)}}">
-                        {{ csrf_field() }}
-                        @method('DELETE')
-
-                        <input type="submit" value="{{ __('messages.Delete') }}">
-                    </form>
+                    <a href="/cart/{{ $product->id }}">{{ __('messages.Remove') }}</a>
                 </td>
             </tr>
         @endforeach
     </table>
-    @endif
+@endif
+    <br />
 
-    <a href="{{ action("ProductController@create") }}">{{ __('messages.Add') }}</a>
+    <table>
+        <tr>
+            <td>{{ __('messages.Name') }} :</td>
+            <td><input type="text" name="name" value=""></td>
+        </tr>
 
-    <a href="/logout">{{ __('messages.Logout') }}</a>
+        <tr>
+            <td>{{ __('messages.Email') }} :</td>
+            <td><input type="text" name="email" value=""></td>
+        </tr>
+
+        <tr>
+            <td>{{ __('messages.Comments') }}</td>
+            <td><textarea name="comments" rows="5" cols="22"></textarea></td>
+        </tr>
+
+        <tr>
+            <td><a href="/index">{{ __('messages.Go to index') }}</a></td>
+            <td><input type="submit" name="submit" value="{{ __('messages.Checkout') }}"/></td>
+        </tr>
+    </table>
+</form>
 
 @endsection

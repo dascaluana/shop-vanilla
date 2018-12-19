@@ -1,29 +1,39 @@
-<tr>
-    <td>
-        @if (strlen($product->title))
-            <b>{{ __('messages.Title') }}: </b> {{ $product->title }}<br />
-        @endif
+@extends ('layouts2.master')
 
-        @if (strlen($product->description))
-            <b>{{ __('messages.Description') }}: </b> {{ $product->description }}<br />
-        @endif
+@section('content')
+    @if ($product->id)
+        <table border="1">
+            <tr>
+                <th>{{ __('messages.Title') }}</th>
+                <th>{{ __('messages.Description') }}</th>
+                <th>{{ __('messages.Price') }}</th>
+                <th>{{ __('messages.Image') }}</th>
+            </tr>
+            <tr>
+                <td>
+                    @if (strlen($product->title))
+                        {{ $product->title }}<br />
+                    @endif
+                </td>
 
-        @if (strlen($product->price))
-            <b>{{ __('messages.Price') }}: </b> {{ $product->price }}
-        @endif
-    </td>
-    <td>
-        <img src="{{ asset('storage/images/' . $product->image) }}" width="50" height="50"/>
-    </td>
-    <td align="center">
-        <a href="{{ action("ProductController@edit", $product->id) }}">{{ __('messages.Edit') }}</a>
+                <td>
+                    @if (strlen($product->description))
+                        {{ $product->description }}<br />
+                    @endif
+                </td>
 
-        <form method="post" action="{{action('ProductController@destroy', $product->id)}}">
-            {{ csrf_field() }}
-            @method('DELETE')
+                <td>
+                    @if (strlen($product->price))
+                        {{ $product->price }}
+                    @endif
+                </td>
 
-            <input type="submit" value="{{ __('messages.Delete') }}">
-        </form>
-    </td>
-</tr>
-
+                <td>
+                    @if (strlen($product->image))
+                        <img src="{{ asset('storage/images/' . $product->image) }}" width="50" height="50"/>
+                    @endif
+                </td>
+            </tr>
+        </table>
+    @endif
+@endsection

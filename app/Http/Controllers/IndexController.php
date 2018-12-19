@@ -6,6 +6,10 @@ use App\Product;
 
 class IndexController extends Controller
 {
+    /**
+     * @param Product $products
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function index(Product $products)
     {
         $query = $products->newQuery();
@@ -16,10 +20,13 @@ class IndexController extends Controller
 
         $products = $query->get();
 
-//        dd(session()->get('id'));
         return view('shop.index', compact('products'));
     }
 
+    /**
+     * @param Product $product
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function add(Product $product)
     {
         request()->session()->push('id', $product->getKey());

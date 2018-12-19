@@ -30,8 +30,8 @@
         <tr>
             <td>{{ __('messages.Image') }}:</td>
             <td>
-                <img src="{{ asset('images/' . $product->image) }}" width="50" height="50"/>
-                <input type="file" class="form-control" name="image" id="image"/>
+                <img src="{{ asset('storage/images/' . $product->image) }}" width="50" height="50"/>
+                <input type="file" name="image" id="image"/>
             </td>
         </tr>
 

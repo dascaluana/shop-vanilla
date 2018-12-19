@@ -57,9 +57,10 @@ class ProductController extends Controller
         $lastId = $product->id;
 
         $file = $request->file('image');
+
         $fileName = $lastId . '.' . $file->getClientOriginalExtension();
 
-        $file->storeAs('images', $fileName);
+        $file->storeAs('public/images', $fileName);
 
         $product->newQuery()
             ->where('id', $lastId)
@@ -79,7 +80,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        return view('products.create', compact('product'));
+        return view('products.show', compact('product'));
     }
 
     /**
@@ -107,14 +108,19 @@ class ProductController extends Controller
             'title' => 'required',
             'description' => 'required',
             'price' => 'required|numeric',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg',
         ]);
 
-        //dd($request->file('image'));
-
         $file = $request->file('image');
-        $fileName = $product->id . '.' . $file->getClientOriginalExtension();
 
-        $file->storeAs('public/images', $fileName);
+        if($file) {
+            $fileName = $product->id . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('public/images', $fileName);
+        }
+        else {
+            $fileName = $product->image;
+        }
+
 
         $product->newQuery()
             ->where('id', $product->getKey())

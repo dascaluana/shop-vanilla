@@ -30,7 +30,7 @@
             <td>
                 <form action="" method="post" enctype="multipart/form-data">
                     @csrf
-                    <input type="file" class="form-control" name="image" id="image"/>
+                    <input type="file" name="image" id="image"/>
                 </form>
             </td>
         </tr>

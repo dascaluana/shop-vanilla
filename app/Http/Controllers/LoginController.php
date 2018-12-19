@@ -9,11 +9,17 @@ class LoginController extends Controller
         $this->middleware('guest', ['except' => 'destroy']);
     }
 
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function create()
     {
         return view('login.create');
     }
 
+    /**
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function store()
     {
         $validator = \Validator::make(request()->all(), [
@@ -37,6 +43,9 @@ class LoginController extends Controller
         return redirect('products');
     }
 
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function destroy()
     {
         auth()->logout();

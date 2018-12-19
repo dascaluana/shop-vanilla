@@ -9,6 +9,10 @@ use mysql_xdevapi\Session;
 
 class CartController extends Controller
 {
+    /**
+     * @param Product $products
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function index(Product $products)
     {
         $products = $products
@@ -16,9 +20,13 @@ class CartController extends Controller
             ->whereIn('id',session()->get('id') ?: [0])
             ->get();
 
-        return view('cart.cart', compact('products'));
+        return view('cart.index', compact('products'));
     }
 
+    /**
+     * @param Product $product
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function remove(Product $product)
     {
         $session = session()->get('id');
@@ -33,6 +41,9 @@ class CartController extends Controller
         return back();
     }
 
+    /**
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function checkout()
     {
         $data = request(['name', 'email', 'comments']);
