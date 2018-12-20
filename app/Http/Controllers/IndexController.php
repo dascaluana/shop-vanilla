@@ -20,6 +20,10 @@ class IndexController extends Controller
 
         $products = $query->get();
 
+        if (request()->expectsJson()) {
+            return $products;
+        }
+
         return view('shop.index', compact('products'));
     }
 

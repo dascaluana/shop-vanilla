@@ -7,7 +7,7 @@
         </div><br />
     @endif
 
-    @if($products->count())
+    @if ($products->count())
     <table border="1">
         <tr>
             <th>{{ __('messages.Product') }}</th>

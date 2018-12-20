@@ -1,47 +1,89 @@
 @extends ('layouts2.master')
 
 @section('content')
-    <table border="1">
+    <table>
+        @if ($order->name)
         <tr>
-            <th>{{ __('messages.Title') }}</th>
-            <th>{{ __('messages.Description') }}</th>
-            <th>{{ __('messages.Price') }}</th>
-            <th>{{ __('messages.Image') }}</th>
+            <td>
+                <b>{{ __('messages.Name') }}:</b>
+            </td>
+            <td>
+                {{ $order->name }}
+            </td>
         </tr>
-        @foreach($order->products as $product)
+        @endif
+
+        @if ($order->email)
             <tr>
                 <td>
-                    @if (strlen($product->title))
-                        {{ $product->title }}<br />
-                    @endif
+                    <b>{{ __('messages.Email') }}:</b>
                 </td>
-
                 <td>
-                    @if (strlen($product->description))
-                        {{ $product->description }}<br />
-                    @endif
-                </td>
-
-                <td>
-                    @if (strlen($product->price))
-                        {{ $product->price }}
-                    @endif
-                </td>
-
-                <td>
-                    @if (strlen($product->image))
-                        <img src="{{ asset('storage/images/' . $product->image) }}" width="50" height="50"/>
-                    @endif
+                    {{ $order->email }}
                 </td>
             </tr>
-        @endforeach
+        @endif
+
+        @if ($order->comments)
+            <tr>
+                <td>
+                    <b>{{ __('messages.Comments') }}:</b>
+                </td>
+                <td>
+                    {{ $order->comments }}
+                </td>
+            </tr>
+        @endif
+
+        @if ($order->created_at)
+            <tr>
+                <td>
+                    <b>{{ __('messages.Date') }}:</b>
+                </td>
+                <td>
+                    {{ $order->created_at }}
+                </td>
+            </tr>
+        @endif
     </table>
 
-    <b>{{ __('messages.Info Order') }}: </b><br />
-    <b>{{ __('messages.Name') }}: </b>{{ $order->name }}<br />
-    <b>{{ __('messages.Email') }}</b>: {{ $order->email }}<br />
-    <b>{{ __('messages.Comments') }}</b>: {{ $order->comments }}<br />
-    <b>{{ __('messages.Date') }}</b>: {{ $order->created_at }}<br />
+    @if ($order->products->count())
+        <table border="1">
+            <tr>
+                <th>{{ __('messages.Title') }}</th>
+                <th>{{ __('messages.Description') }}</th>
+                <th>{{ __('messages.Price') }}</th>
+                <th>{{ __('messages.Image') }}</th>
+            </tr>
+            @foreach($order->products as $product)
+                <tr>
+                    @if (strlen($product->title))
+                        <td>
+                            {{ $product->title }}
+                        </td>
+                    @endif
+
+                    @if (strlen($product->description))
+                        <td>
+                            {{ $product->description }}
+                        </td>
+                    @endif
+
+                    @if (strlen($product->price))
+                        <td>
+                            {{ $product->price }}
+                        </td>
+                    @endif
+
+                    @if (strlen($product->image))
+                        <td>
+                            <img src="{{ asset('storage/images/' . $product->image) }}" width="50" height="50"/>
+                        </td>
+                    @endif
+                </tr>
+            @endforeach
+        </table>
+    @endif
 
     <a href="/orders">{{ __('messages.Orders') }}</a>
 @endsection

@@ -1,6 +1,8 @@
 @extends ('layouts2.master')
 
 @section('content')
+
+@if ($orders->count())
     <table border="1">
         <tr>
             <th>{{ __('messages.Date') }}</th>
@@ -12,29 +14,20 @@
         </tr>
         @foreach ($orders as $order)
             <tr>
-                <td>
-                    @if (strlen($order->created_at))
-                        {{ $order->created_at }}<br />
-                    @endif
-                </td>
+                @if (strlen($order->created_at))
+                    <td>{{ $order->created_at }}</td>
+                @endif
 
-                <td>
-                    @if (strlen($order->name))
-                        {{ $order->name }}<br />
-                    @endif
-                </td>
+                @if (strlen($order->name))
+                    <td>{{ $order->name }}</td>
+                @endif
 
-                <td>
-                    @if (strlen($order->email))
-                        {{ $order->email }}
-                    @endif
-                </td>
-
-                <td>
-                    @if (strlen($order->comments))
-                        {{ $order->comments }}
-                    @endif
-                </td>
+                @if (strlen($order->email))
+                    <td>{{ $order->email }}</td>
+                @endif
+                @if (strlen($order->comments))
+                    <td>{{ $order->comments }}</td>
+                @endif
 
                 <?php
                 $product = '';
@@ -44,9 +37,11 @@
                 }
                 ?>
 
-                <td>
-                    <?= nl2br($product) ?>
-                </td>
+                @if (strlen($product))
+                    <td>
+                        <?= nl2br($product) ?>
+                    </td>
+                @endif
 
                 <td>
                     <a href="order/{{ $order->id }}">{{ __('messages.View') }}</a>
@@ -54,5 +49,6 @@
             </tr>
         @endforeach
     </table>
+@endif
 
 @endsection

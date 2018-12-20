@@ -2,37 +2,49 @@
 
 @section('content')
     @if ($product->id)
-        <table border="1">
+        <table>
             <tr>
-                <th>{{ __('messages.Title') }}</th>
-                <th>{{ __('messages.Description') }}</th>
-                <th>{{ __('messages.Price') }}</th>
-                <th>{{ __('messages.Image') }}</th>
+                @if ($product->title)
+                    <td>
+                        <b>{{ __('messages.Title') }}:</b>
+                    </td>
+                    <td>
+                        {{ $product->title }}
+                    </td>
+                @endif
             </tr>
+
             <tr>
-                <td>
-                    @if (strlen($product->title))
-                        {{ $product->title }}<br />
-                    @endif
-                </td>
+                @if ($product->description)
+                    <td>
+                        <b>{{ __('messages.Description') }}:</b>
+                    </td>
+                    <td>
+                        {{ $product->description }}
+                    </td>
+                @endif
+            </tr>
 
-                <td>
-                    @if (strlen($product->description))
-                        {{ $product->description }}<br />
-                    @endif
-                </td>
-
-                <td>
-                    @if (strlen($product->price))
+            <tr>
+                @if ($product->price)
+                    <td>
+                        <b>{{ __('messages.Price') }}:</b>
+                    </td>
+                    <td>
                         {{ $product->price }}
-                    @endif
-                </td>
+                    </td>
+                @endif
+            </tr>
 
-                <td>
-                    @if (strlen($product->image))
+            <tr>
+                @if ($product->image)
+                    <td>
+                        <b>{{ __('messages.Image') }}:</b>
+                    </td>
+                    <td>
                         <img src="{{ asset('storage/images/' . $product->image) }}" width="50" height="50"/>
-                    @endif
-                </td>
+                    </td>
+                @endif
             </tr>
         </table>
     @endif

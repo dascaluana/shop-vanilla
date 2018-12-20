@@ -4,6 +4,7 @@
 
 <form method="POST" action="/cart">
     {{ csrf_field() }}
+
 @if ((session()->get('id')))
     <table border="1">
         <tr>

@@ -16,6 +16,9 @@ class ProductController extends Controller
     {
         $products = Product::query()->get();
 
+        if (request()->expectsJson()) {
+            return $products;
+        }
         return view('products.index', compact('products'));
     }
 
@@ -55,18 +58,12 @@ class ProductController extends Controller
         $product->save();
 
         $lastId = $product->id;
-
         $file = $request->file('image');
-
         $fileName = $lastId . '.' . $file->getClientOriginalExtension();
-
         $file->storeAs('public/images', $fileName);
+        $product->image = $fileName;
 
-        $product->newQuery()
-            ->where('id', $lastId)
-            ->update([
-                'image' => $fileName
-            ]);
+        $product->save();
 
         return redirect('products')->with('success', 'Product has been added');
 
@@ -121,15 +118,12 @@ class ProductController extends Controller
             $fileName = $product->image;
         }
 
+        $product->title = $request->get('title');
+        $product->description = $request->get('description');
+        $product->price = $request->get('price');
+        $product->image = $fileName;
 
-        $product->newQuery()
-            ->where('id', $product->getKey())
-            ->update([
-                'title' => $request->get('title'),
-                'description' => $request->get('description'),
-                'price' => $request->get('price'),
-                'image' => $fileName
-            ]);
+        $product->save();
 
         return redirect('/products')->with('success', 'Product has been updated');
     }

@@ -20,6 +20,9 @@ class CartController extends Controller
             ->whereIn('id',session()->get('id') ?: [0])
             ->get();
 
+        if (request()->expectsJson()) {
+            return $products;
+        }
         return view('cart.index', compact('products'));
     }
 
