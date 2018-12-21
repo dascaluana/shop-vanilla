@@ -139,6 +139,10 @@ class ProductController extends Controller
     {
         $product->delete();
 
+        if (request()->expectsJson()) {
+            return;
+        }
+
         return redirect('/products')->with('success', 'Product has been deleted Successfully');
     }
 }

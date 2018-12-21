@@ -7,68 +7,176 @@
     <!-- Custom JS script -->
     <script type="text/javascript">
 
-        $(document).ready(function () {
-
-            /**
-             * A function that takes a products array and renders it's html
-             *
-             * The products array must be in the form of
-             * [{
-             *     "title": "Product 1 title",
-             *     "description": "Product 1 desc",
-             *     "price": 1
-             * },{
-             *     "title": "Product 2 title",
-             *     "description": "Product 2 desc",
-             *     "price": 2
-             * }]
-             */
-            function renderList(products, name) {
-                html = [
+        /**
+         * A function that takes a products array and renders it's html
+         *
+         * The products array must be in the form of
+         * [{
+         *     "title": "Product 1 title",
+         *     "description": "Product 1 desc",
+         *     "price": 1
+         * },{
+         *     "title": "Product 2 title",
+         *     "description": "Product 2 desc",
+         *     "price": 2
+         * }]
+         */
+        function renderList(products, name) {
+            var html = [
                     '<tr>',
                     '<th>Title</th>',
                     '<th>Description</th>',
                     '<th>Price</th>',
                     '<th>Image</th>',
+                ],
+                action = '';
+
+            if (name === 'products') {
+                action = 'Edit/Delete'
+            } else if (name === 'index') {
+                action = 'Add';
+            } else {
+                action = 'Remove';
+            }
+
+            html.push('<th>' + action + '</th>');
+            html.push('</tr>');
+
+            html = html.join('');
+
+            $.each(products, function (key, product) {
+                html += [
+                    '<tr>',
+                    '<td>' + product.title + '</td>',
+                    '<td>' + product.description + '</td>',
+                    '<td>' + product.price + '</td>',
+                    '<td><img src="storage/images/' + product.image + '" width="50" height="50"/></td>',
                 ].join('');
 
-                if (name === 'index') {
+                if (name === 'products') {
                     html += [
-                        '<th>Add</th>',
+                        '<td align="center">',
+                        '<a href="#product">Edit</a><br />',
+                        '<a product-id="' + product.id + '" class="deleteProd" href="#">Delete</a>',
+                        '</tr>',
+                    ].join('');
+                } else if (name === 'index') {
+                    html += [
+                        '<td><a product-id="' + product.id + '" class="addCart" href="#">Add</a></td>',
                         '</tr>'
                     ].join('');
                 } else {
                     html += [
-                        '<th>Remove</th>',
+                        '<td><a product-id="' + product.id + '" class="removeCart" href="#">Remove</a></td>',
                         '</tr>'
                     ].join('');
                 }
+            });
 
-                $.each(products, function (key, product) {
-                    html += [
-                        '<tr>',
-                        '<td>' + product.title + '</td>',
-                        '<td>' + product.description + '</td>',
-                        '<td>' + product.price + '</td>',
-                        '<td><img src="storage/images/' + product.image + '" width="50" height="50"/></td>',
-                    ].join('');
+            return html;
 
-                    if (name === 'index') {
-                        html += [
-                            '<td><a href="/#/' + product.id + '">Add</a></td>',
-                            '</tr>'
-                        ].join('');
+        }
+
+        function displayProducts (name) {
+            $.ajax('/' + name, {
+                dataType: 'json',
+                success: function (response) {
+                    // Render the products in the index list
+                    if (response.length === 0) {
+                        if (name === 'cart') {
+                            $('.emailForm').hide();
+                        }
+                        $('.' + name + ' .list').html(emptyCart());
                     } else {
-                        html += [
-                            '<td><a href="/#cart/' + product.id + '">Remove</a></td>',
-                            '</tr>'
-                        ].join('');
+                        if (name === 'cart') {
+                            $('.emailForm').show();
+                        }
+                        $('.' + name + ' .list').html(renderList(response, name));
                     }
+                }
+            });
+        }
+
+        function emptyCart () {
+            var html = [
+                '<p>No products</p>',
+            ].join('');
+            return html;
+        }
+
+        $(document).on('click', '.addCart', function(e) {
+            e.preventDefault();
+
+            var id = $(this).attr('product-id');
+            $.ajax({
+                url: '/index/' + id,
+                method: 'GET',
+                dataType: 'json',
+            })
+                .done(function () {
+                    displayProducts('index');
                 });
+        });
 
-                return html;
+        $(document).on('click', '.removeCart', function(e) {
+            e.preventDefault();
 
-            }
+            var id = $(this).attr('product-id');
+            $.ajax({
+                url: '/cart/' + id,
+                method: 'GET',
+                dataType: 'json',
+            })
+            .always(function () {
+                displayProducts('cart');
+            });
+        });
+
+        $(document).on('click', '.deleteProd', function(e) {
+            e.preventDefault();
+
+            var id = $(this).attr('product-id');
+            $.ajax({
+                url: '/products/' + id,
+                method: 'DELETE',
+                dataType: 'json',
+            })
+                .always(function () {
+                    displayProducts('products');
+                });
+        });
+
+        $(document).on('submit', '.emailForm', function (e) {
+            e.preventDefault();
+
+            var form = $(this);
+            $.ajax({
+                type: 'POST',
+                url: '/cart',
+                data: form.serialize(),
+                dataType: 'json'
+            })
+                .always(function () {
+                    $('.cart .list').html(emptyCart());
+                });
+        });
+
+        $(document).on('submit', '.editForm', function (e) {
+            e.preventDefault();
+
+            var form = $(this);
+            $.ajax({
+                type: 'POST',
+                url: '/product/create',
+                data: form.serialize(),
+                dataType: 'json'
+            })
+                .always(function () {
+
+                });
+        });
+
+        $(document).ready(function () {
 
             /**
              * URL hash change handler
@@ -81,43 +189,32 @@
                     case '#cart':
                         // Show the cart page
                         $('.cart').show();
+
                         // Load the cart products from the server
-                        $.ajax('/cart', {
-                            dataType: 'json',
-                            success: function (response) {
-                                // Render the products in the cart list
-                                $('.cart .list').html(renderList(response, 'cart'));
-                            }
-                        });
+                        displayProducts('cart');
+                        break;
+                    case '#products':
+                        // Show the products page
+                        $('.products').show();
+
+                        // Load the products from the server
+                        displayProducts('products');
+                        break;
+                    case '#product':
+                        // Show the products page
+                        $('.product').show();
+
                         break;
                     default:
                         // If all else fails, always default to index
                         // Show the index page
                         $('.index').show();
+
                         // Load the index products from the server
-                        $.ajax('/index', {
-                            dataType: 'json',
-                            success: function (response) {
-                                // Render the products in the index list
-                                $('.index .list').html(renderList(response, 'index'));
-                            }
-                        });
+                        displayProducts('index');
                         break;
                 }
             };
-
-            // $('').click(function() {
-            //     var id = ($(this).attr('id'));
-            //     $.ajax({
-            //         url: '/index/' + product.id,
-            //         method: 'POST',
-            //         data: {},
-            //         dataType: 'json'
-            //     })
-            //         .done(function (msg) {
-            //
-            //         });
-            // });
 
             window.onhashchange();
         });
@@ -138,8 +235,84 @@
     <!-- The cart element where the products list is rendered -->
     <table class="list"></table>
 
+    <form class="emailForm" action="" method="post">
+        <table>
+            <tr>
+                <td>Name:</td>
+                <td><input type="text" name="name" value=""></td>
+            </tr>
+
+            <tr>
+                <td>Email:</td>
+                <td><input type="text" name="email" value=""></td>
+            </tr>
+
+            <tr>
+                <td>Comments:</td>
+                <td><textarea name="comments" rows="5" cols="22"></textarea></td>
+            </tr>
+
+            <tr>
+                <td><input type="submit" name="submit" value="Checkout"/></td>
+            </tr>
+        </table>
+    </form>
+
     <!-- A link to go to the index by changing the hash -->
     <a href="#" class="button">Go to index</a>
 </div>
+
+<!-- The products page -->
+<div class="page products">
+    <!-- The index element where the products list is rendered -->
+    <table class="list"></table>
+
+    <a href="#product" class="button">Add</a>
+    <a href="#" class="button">Logout</a>
+</div>
+
+<!-- The product page -->
+<div class="page product">
+    <!-- The index element where the products list is rendered -->
+    <form class="editForm">
+        <table>
+            <tr>
+                <td>Title:</td>
+                <td>
+                    <input type="text" name="title" value="">
+                </td>
+            </tr>
+
+            <tr>
+                <td>Description:</td>
+                <td>
+                    <textarea type="text" name="description" rows="5" cols="22"></textarea>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Price:</td>
+                <td>
+                    <input type="text" name="price"  value="">
+                </td>
+            </tr>
+
+            <tr>
+                <td>Image:</td>
+                <td>
+                    <img src="">
+                    <input type="file" name="fileToUpload" id="fileToUpload">
+                </td>
+            </tr>
+
+            <tr>
+                <td><a href="#products">Products</a></td>
+                <td><input type="submit" name="submit" value="Save"/></td>
+            </tr>
+        </table>
+    </form>
+
+</div>
+
 </body>
 </html>

@@ -38,7 +38,7 @@
             </tr>
         @endforeach
     </table>
-@endif
+
     <br />
 
     <table>
@@ -58,10 +58,15 @@
         </tr>
 
         <tr>
-            <td><a href="/index">{{ __('messages.Go to index') }}</a></td>
             <td><input type="submit" name="submit" value="{{ __('messages.Checkout') }}"/></td>
         </tr>
     </table>
 </form>
-
+@endif
+@if (!(session()->get('id')))
+    <div class="alert">
+        No data in cart
+    </div>
+@endif
+<td><a href="/index">{{ __('messages.Go to index') }}</a></td>
 @endsection

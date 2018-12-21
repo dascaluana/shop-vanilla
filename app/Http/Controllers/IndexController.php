@@ -35,6 +35,10 @@ class IndexController extends Controller
     {
         request()->session()->push('id', $product->getKey());
 
+        if (request()->expectsJson()) {
+            return response(['success' => true]);
+        }
+
         return back();
     }
 }

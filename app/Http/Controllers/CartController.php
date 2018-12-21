@@ -41,6 +41,10 @@ class CartController extends Controller
             }
         }
 
+        if (request()->expectsJson()) {
+            return;
+        }
+
         return back();
     }
 
@@ -60,6 +64,10 @@ class CartController extends Controller
         \Mail::to(config('app.admin_email'))->send(new OrderCreated($order));
 
         session()->forget('id');
+
+        if (request()->expectsJson()) {
+            return;
+        }
 
         return redirect('/cart');
     }
