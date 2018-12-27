@@ -32,13 +32,7 @@ class ProductController extends Controller
         return view('products.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function save(Request $request, Product $product)
     {
         $request->validate([
             'title' => 'required',
@@ -47,23 +41,43 @@ class ProductController extends Controller
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg',
         ]);
 
-        /** @var Product $product */
-        $product = new Product();
-
         $product->title = $request->get('title');
         $product->description = $request->get('description');
         $product->price = $request->get('price');
-        $product->image = '';
+
+        if ($request->file('image')) {
+            $product->image = '';
+        }
 
         $product->save();
 
-        $lastId = $product->id;
         $file = $request->file('image');
-        $fileName = $lastId . '.' . $file->getClientOriginalExtension();
-        $file->storeAs('public/images', $fileName);
-        $product->image = $fileName;
+
+        if ($file) {
+            $fileName = $product->id . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('public/images', $fileName);
+            $product->image = $fileName;
+        }
 
         $product->save();
+
+        return $product;
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $product = new Product();
+        $product = $this->save($request, $product);
+
+        if (request()->expectsJson()) {
+            return $product;
+        }
 
         return redirect('products')->with('success', 'Product has been added');
 
@@ -77,6 +91,10 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
+        if (request()->expectsJson()) {
+            return $product;
+        }
+
         return view('products.show', compact('product'));
     }
 
@@ -89,6 +107,7 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $product->find($product->id);
+
         return view('products.edit', compact('product', $product->id));
     }
 
@@ -101,29 +120,11 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'required',
-            'price' => 'required|numeric',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg',
-        ]);
+        $product = $this->save($request, $product);
 
-        $file = $request->file('image');
-
-        if($file) {
-            $fileName = $product->id . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('public/images', $fileName);
+        if (request()->expectsJson()) {
+            return  $product;
         }
-        else {
-            $fileName = $product->image;
-        }
-
-        $product->title = $request->get('title');
-        $product->description = $request->get('description');
-        $product->price = $request->get('price');
-        $product->image = $fileName;
-
-        $product->save();
 
         return redirect('/products')->with('success', 'Product has been updated');
     }
@@ -140,7 +141,7 @@ class ProductController extends Controller
         $product->delete();
 
         if (request()->expectsJson()) {
-            return;
+            return $product;
         }
 
         return redirect('/products')->with('success', 'Product has been deleted Successfully');

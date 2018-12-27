@@ -56,7 +56,7 @@
                 if (name === 'products') {
                     html += [
                         '<td align="center">',
-                        '<a href="#product">Edit</a><br />',
+                        '<a href="#save?id=' + product.id + '">Edit</a><br />',
                         '<a product-id="' + product.id + '" class="deleteProd" href="#">Delete</a>',
                         '</tr>',
                     ].join('');
@@ -75,6 +75,51 @@
 
             return html;
 
+        }
+
+        function renderSaveForm(product) {
+
+            var html = [
+                '<tr>',
+                    '<td>Title:</td>',
+                    '<td>',
+                        '<input type="text" name="title" value="' + product.title + '">',
+                        '<div class="errors err-title"></div>',
+                    '</td>',
+                '</tr>',
+
+                '<tr>',
+                    '<td>Description:</td>',
+                    '<td>',
+                        '<textarea type="text" name="description" rows="5" cols="22">' + product.description + '</textarea>',
+                        '<div class="errors err-description"></div>',
+                    '</td>',
+                '</tr>',
+
+                '<tr>',
+                    '<td>Price:</td>',
+                    '<td>',
+                        '<input type="text" name="price"  value="' + product.price + '">',
+                        '<div class="errors err-price"></div>',
+                    '</td>',
+                '</tr>',
+
+                '<tr>',
+                    '<td>Image:</td>',
+                    '<td>',
+                        (product.image && product.image.length ? '<img src="storage/images/' + product.image + '" width="50" height="50">' : ''),
+                        '<input type="file" name="image" id="image">',
+                        '<div class="errors err-image"></div>',
+                    '</td>',
+                '</tr>',
+
+                '<tr>',
+                    '<td><a href="#products">Products</a></td>',
+                    '<td><input type="submit" name="submit" value="Save"/></td>',
+                '</tr>'
+            ].join('');
+
+            return html;
         }
 
         function displayProducts (name) {
@@ -104,6 +149,42 @@
             return html;
         }
 
+        function saveProduct (form)
+        {
+            var id = $(form).attr('product-id'),
+                url = "/products";
+
+            if (id && id.length) {
+                url += id + '?_method=PUT';
+            }
+
+            $('.errors').html('').hide();
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: new FormData(form),
+                contentType: false,
+                processData: false,
+                dataType: 'json'
+            })
+            .done(function () {
+                window.location = '#products';
+            })
+            .fail(function (response) {
+                console.log(response);
+
+                if (!response.responseJSON || !response.responseJSON.errors) {
+                    return;
+                }
+
+                for (var item in response.responseJSON.errors) {
+                    $('.err-' + item).html(response.responseJSON.errors[item].join('<br />')).show();
+                }
+
+            });
+        }
+
         $(document).on('click', '.addCart', function(e) {
             e.preventDefault();
 
@@ -113,9 +194,9 @@
                 method: 'GET',
                 dataType: 'json',
             })
-                .done(function () {
-                    displayProducts('index');
-                });
+            .done(function () {
+                displayProducts('index');
+            });
         });
 
         $(document).on('click', '.removeCart', function(e) {
@@ -127,7 +208,7 @@
                 method: 'GET',
                 dataType: 'json',
             })
-            .always(function () {
+            .done(function () {
                 displayProducts('cart');
             });
         });
@@ -141,9 +222,9 @@
                 method: 'DELETE',
                 dataType: 'json',
             })
-                .always(function () {
-                    displayProducts('products');
-                });
+            .done(function () {
+                displayProducts('products');
+            });
         });
 
         $(document).on('submit', '.emailForm', function (e) {
@@ -156,24 +237,15 @@
                 data: form.serialize(),
                 dataType: 'json'
             })
-                .always(function () {
+                .done(function () {
                     $('.cart .list').html(emptyCart());
                 });
         });
 
-        $(document).on('submit', '.editForm', function (e) {
+        $(document).on('submit', '.saveForm', function (e) {
             e.preventDefault();
 
-            var form = $(this);
-            $.ajax({
-                type: 'POST',
-                url: '/product/create',
-                data: form.serialize(),
-                dataType: 'json'
-            })
-                .always(function () {
-
-                });
+            saveProduct(this);
         });
 
         $(document).ready(function () {
@@ -182,27 +254,66 @@
              * URL hash change handler
              */
             window.onhashchange = function () {
+                var hash = document.URL.substr(document.URL.indexOf('#') +1 ),
+                    pos = hash.indexOf('?'),
+                    page = hash,
+                    params = [];
+
+                if (pos !== -1) {
+                    page = hash.substr(0, pos);
+
+                    hash.substr(pos + 1)
+                        .split('&')
+                        .forEach(function (v, k) {
+                            var explode = v.split('=');
+                            params[explode[0]] = explode[1];
+                        });
+                }
+
                 // First hide all the pages
                 $('.page').hide();
 
-                switch(window.location.hash) {
-                    case '#cart':
+                switch (page) {
+                    case 'cart':
                         // Show the cart page
                         $('.cart').show();
 
                         // Load the cart products from the server
                         displayProducts('cart');
                         break;
-                    case '#products':
+                    case 'products':
                         // Show the products page
                         $('.products').show();
 
                         // Load the products from the server
                         displayProducts('products');
                         break;
-                    case '#product':
+                    case 'save':
                         // Show the products page
-                        $('.product').show();
+
+                        var product = {
+                                id: "",
+                                title: "",
+                                description: "",
+                                price: "",
+                                image: ""
+                            };
+
+                        if (params.id) {
+                            $.ajax('/products/' + params.id, {
+                                dataType: 'json'
+                            })
+                            .done(function (response) {
+                                $('.save .saveForm').attr('product-id', response.id);
+                                product = response;
+
+                                $('.save .tableProd').html(renderSaveForm(product));
+                                $('.save').show();
+                            });
+                        } else {
+                            $('.save .tableProd').html(renderSaveForm(product));
+                            $('.save').show();
+                        }
 
                         break;
                     default:
@@ -222,7 +333,7 @@
 </head>
 <body>
 <!-- The index page -->
-<div class="page index">
+<div class="page index" style="display: none;">
     <!-- The index element where the products list is rendered -->
     <table class="list"></table>
 
@@ -231,7 +342,7 @@
 </div>
 
 <!-- The cart page -->
-<div class="page cart">
+<div class="page cart" style="display: none;">
     <!-- The cart element where the products list is rendered -->
     <table class="list"></table>
 
@@ -263,55 +374,19 @@
 </div>
 
 <!-- The products page -->
-<div class="page products">
+<div class="page products" style="display: none;">
     <!-- The index element where the products list is rendered -->
     <table class="list"></table>
 
-    <a href="#product" class="button">Add</a>
+    <a href="#save" class="button">Add</a>
     <a href="#" class="button">Logout</a>
 </div>
 
-<!-- The product page -->
-<div class="page product">
-    <!-- The index element where the products list is rendered -->
-    <form class="editForm">
-        <table>
-            <tr>
-                <td>Title:</td>
-                <td>
-                    <input type="text" name="title" value="">
-                </td>
-            </tr>
-
-            <tr>
-                <td>Description:</td>
-                <td>
-                    <textarea type="text" name="description" rows="5" cols="22"></textarea>
-                </td>
-            </tr>
-
-            <tr>
-                <td>Price:</td>
-                <td>
-                    <input type="text" name="price"  value="">
-                </td>
-            </tr>
-
-            <tr>
-                <td>Image:</td>
-                <td>
-                    <img src="">
-                    <input type="file" name="fileToUpload" id="fileToUpload">
-                </td>
-            </tr>
-
-            <tr>
-                <td><a href="#products">Products</a></td>
-                <td><input type="submit" name="submit" value="Save"/></td>
-            </tr>
-        </table>
+<!-- The edit page -->
+<div class="page save" style="display: none;">
+    <form class="saveForm">
+        <table class="tableProd"></table>
     </form>
-
 </div>
 
 </body>
