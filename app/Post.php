@@ -6,15 +6,16 @@ use Carbon\Carbon;
 
 class Post extends Model
 {
+    protected $table = "posts";
 
     public function comments()
     {
         return $this->hasMany(Comment::class);
     }
 
-    public function user()
+    public function person()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Person::class);
     }
 
     public function addComment($body)
@@ -46,7 +47,7 @@ class Post extends Model
 
     public function tags()
     {
-        return $this->belongsToMany(Tag::class);
+        return $this->morphToMany(\App\Tag::class, 'taggable');
     }
 
 }

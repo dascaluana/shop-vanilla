@@ -5,6 +5,7 @@ namespace App;
 
 class Comment extends Model
 {
+    protected $table = "comments";
     // $comments->post;
 
     public function post()

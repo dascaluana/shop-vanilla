@@ -19,6 +19,10 @@ class OrderController extends Controller
             ])
             ->get();
 
+        if (request()->expectsJson()) {
+            return $orders;
+        }
+
         return view('order.index', compact('orders'));
     }
 
@@ -28,6 +32,11 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
+        $order->load('products');
+
+        if (request()->expectsJson()) {
+            return $order;
+        }
         return view('order.show', compact('order'));
     }
 }

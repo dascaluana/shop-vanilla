@@ -40,6 +40,10 @@ class LoginController extends Controller
 
         $validator->validate();
 
+        if (request()->expectsJson()) {
+            return response()->json();
+        }
+
         return redirect('products');
     }
 
@@ -49,6 +53,10 @@ class LoginController extends Controller
     public function destroy()
     {
         auth()->logout();
+
+        if (request()->expectsJson()) {
+            return response()->json();
+        }
 
         return redirect()->home();
     }

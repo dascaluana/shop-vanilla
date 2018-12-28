@@ -77,6 +77,101 @@
 
         }
 
+        function renderOrders(orders) {
+            var html = [
+                    '<tr>',
+                    '<th>Date</th>',
+                    '<th>Name</th>',
+                    '<th>Email</th>',
+                    '<th>Comments</th>',
+                    '<th>Product</th>',
+                    '<th>View</th>',
+                    '</tr>',
+                ].join('');
+
+            $.each(orders, function (key, order) {
+                html += [
+                    '<tr>',
+                    '<td align="center">' + order.created_at + '</td>',
+                    '<td>' + order.name + '</td>',
+                    '<td>' + order.email + '</td>',
+                    '<td align="center">' + order.comments + '</td>',
+                ].join('');
+
+                var productsList = '';
+                if (order.products && order.products.length) {
+                    $.each(order.products, function (key, product) {
+                        productsList += '- ' + product.title + '<br />';
+                    });
+                }
+
+                html += [
+                    '<td>' + productsList + '</td>',
+                    '<td><a href="#order?id=' + order.id + '">View</a></td>',
+                    '</tr>'
+                ].join('');
+            });
+
+            return html;
+        }
+
+        function renderOrder(order) {
+            var html = [
+                '<tr>',
+                '<td>',
+                '<b>Name:</b>',
+                '</td>',
+                '<td>' + order.name + '</td>',
+                '</tr>',
+
+                '<tr>',
+                '<td>',
+                '<b>Email:</b>',
+                '</td>',
+                '<td>' + order.email + '</td>',
+                '</tr>',
+
+                '<tr>',
+                '<td>',
+                '<b>Comments:</b>',
+                '</td>',
+                '<td>' + order.comments + '</td>',
+                '</tr>',
+
+                '<tr>',
+                '<td>',
+                '<b>Date:</b>',
+                '</td>',
+                '<td>' + order.created_at + '</td>',
+                '</tr>',
+            ].join('');
+
+            if (order.products && order.products.length) {
+                html += [
+                    '<tr>',
+                    '<th>Title</th>',
+                    '<th>Description</th>',
+                    '<th>Price</th>',
+                    '<th>Image</th>',
+                    '</tr>',
+                ].join('');
+
+
+                $.each(order.products, function (key, product) {
+                    html += [
+                        '<tr>',
+                        '<td>' + product.title + '</td>',
+                        '<td>' + product.description + '</td>',
+                        '<td>' + product.image + '</td>',
+                        '<td><img src="storage/images/' + product.image + '" width="50" height="50"/></td>',
+                        '</tr>'
+                    ].join('');
+                });
+            }
+
+            return html;
+        }
+
         function renderSaveForm(product) {
 
             var html = [
@@ -124,22 +219,25 @@
 
         function displayProducts (name) {
             $.ajax('/' + name, {
-                dataType: 'json',
-                success: function (response) {
-                    // Render the products in the index list
-                    if (response.length === 0) {
-                        if (name === 'cart') {
-                            $('.emailForm').hide();
-                        }
-                        $('.' + name + ' .list').html(emptyCart());
-                    } else {
-                        if (name === 'cart') {
-                            $('.emailForm').show();
-                        }
-                        $('.' + name + ' .list').html(renderList(response, name));
+                dataType: 'json'
+            })
+            .done(function (response) {
+                // Render the products in the index list
+                if (response.length === 0) {
+                    if (name === 'cart') {
+                        $('.emailForm').hide();
                     }
+                    $('.' + name + ' .list').html(emptyCart());
+                } else {
+                    if (name === 'cart') {
+                        $('.emailForm').show();
+                    }
+                    $('.' + name + ' .list').html(renderList(response, name));
                 }
-            });
+            })
+            .fail(function () {
+                window.location = '#login';
+            })
         }
 
         function emptyCart () {
@@ -149,8 +247,7 @@
             return html;
         }
 
-        function saveProduct (form)
-        {
+        function saveProduct (form) {
             var id = $(form).attr('product-id'),
                 url = "/products";
 
@@ -248,6 +345,47 @@
             saveProduct(this);
         });
 
+        $(document).on('submit', '.loginForm', function (e) {
+            e.preventDefault();
+
+            var form = $(this);
+
+            $('.errors').html('').hide();
+
+            $.ajax({
+                type: 'POST',
+                url: '/login',
+                data: form.serialize(),
+            })
+            .done(function () {
+                window.location = '#products';
+            })
+            .fail(function (response) {
+                console.log(response);
+
+                if (!response.responseJSON || !response.responseJSON.errors) {
+                    return;
+                }
+
+                for (var item in response.responseJSON.errors) {
+                    $('.err-' + item).html(response.responseJSON.errors[item].join('<br />')).show();
+                }
+
+            });
+        });
+
+        $(document).on('click', '.logout', function(e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: '/logout' ,
+                method: 'GET',
+            })
+            .done(function () {
+                window.location = '#login';
+            });
+        });
+
         $(document).ready(function () {
 
             /**
@@ -316,6 +454,37 @@
                         }
 
                         break;
+                    case 'orders':
+                        $('.orders').show();
+
+                        $.ajax('/orders', {
+                            dataType: 'json'
+                        })
+                        .done(function (response) {
+                            $('.orders .list').html(renderOrders(response));
+                        })
+                        .fail(function () {
+                            window.location = '#login';
+                        });
+
+                        break;
+                    case 'order':
+                        $.ajax('/order/' + params.id, {
+                            dataType: 'json'
+                        })
+                        .done(function (response) {
+                            $('.order .list').html(renderOrder(response));
+                            $('.order').show();
+                        })
+                        .fail(function () {
+                            window.location = '#login';
+                        });
+
+                        break;
+                    case 'login':
+                        $('.login').show();
+
+                        break;
                     default:
                         // If all else fails, always default to index
                         // Show the index page
@@ -379,7 +548,7 @@
     <table class="list"></table>
 
     <a href="#save" class="button">Add</a>
-    <a href="#" class="button">Logout</a>
+    <a href="#logout" class="logout">Logout</a>
 </div>
 
 <!-- The edit page -->
@@ -389,5 +558,29 @@
     </form>
 </div>
 
+<!-- The orders page -->
+<div class="page orders" style="display: none;">
+    <!-- The index element where the orders list is rendered -->
+    <table class="list" border="1"></table>
+</div>
+
+<!-- The order page -->
+<div class="page order" style="display: none;">
+    <!-- The index element where the products list and order is rendered -->
+    <table class="list"></table>
+
+    <a href="#orders">Orders</a>
+</div>
+
+<!-- The login page -->
+<div class="page login" style="display: none;">
+    <form class="loginForm">
+        <input type="text" name="email" placeholder="Username"><br />
+        <div class="errors err-email"></div>
+        <input type="password" name="password" placeholder="Password"><br />
+        <div class="errors err-password"></div>
+        <input type="submit" value="Log in">
+    </form>
+</div>
 </body>
 </html>
